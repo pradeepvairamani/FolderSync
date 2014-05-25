@@ -8,7 +8,7 @@ class PPApi(object):
         self._password = password
         self.ppclient = oauth2_access_token_request(email, password, get_base64_password(password))
 
-    def get_user_info(self):
+    def get_user_projects(self):
         return self.ppclient.request('get', 'user/me/projects.json')
 
     def download_file(self, document_id):

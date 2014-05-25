@@ -6,11 +6,11 @@ except ImportError:
     import Tkinter as tk
 
 
-def make_header(parent, caption, width=None, **options):
+def make_header(parent, caption, pady, **options):
     photo = tk.PhotoImage(file="projectplace.gif")
     w = tk.Label(parent, image=photo)
     w.photo = photo
-    w.pack(pady=50)
+    w.pack(pady=pady)
 
 
 def make_entry(parent, caption, width=None, **options):
@@ -26,17 +26,35 @@ def enter(event):
     check_password()
 
 
+def list_view(project_json):
+    parent.destroy()
+    new_parent = tk.Frame(root, padx=20, pady=20)
+    make_header(new_parent, "Select Project", 30)
+    new_parent.pack(fill=tk.BOTH, expand=True)
+    Lb1 = tk.Listbox(new_parent, width=40, height=14)
+    for i in range(len(project_json)):
+        Lb1.insert(i + 1, project_json[i]['name'])
+    Lb1.pack()
+    sync = tk.Button(new_parent, borderwidth=4, text="Sync Project!", pady=8, command=download_project)
+    sync.pack(side=tk.BOTTOM)
+
+
 def check_password():
     pp_email = user.get()
     pp_password = password.get()
     try:
         api = PPApi(pp_email, pp_password)
-        print api.get_user_info()[0]
-        parent.destroy()
+        project_json = api.get_user_projects()
+        list_view(project_json)
+        # parent.destroy()
     except Exception:
         root.title('Credentials incorrect! Try again!')
         user.delete(0, tk.END)
         password.delete(0, tk.END)
+
+
+def download_project():
+    pass
 
 root = tk.Tk()
 root.geometry('640x550')
@@ -47,7 +65,7 @@ parent = tk.Frame(root, padx=20, pady=20)
 parent.pack(fill=tk.BOTH, expand=True)
 
 # entrys with not shown text
-make_header(parent, "Login to Projectplace", 20)
+make_header(parent, "Login to Projectplace", 50)
 user = make_entry(parent, "Email Address:", 16)
 password = make_entry(parent, "Password:", 16, show="*")
 
